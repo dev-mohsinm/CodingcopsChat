@@ -1,4 +1,6 @@
 {
 	"name": "RocketChatRN",
-	"server": "https://open.rocket.chat"
+	"server": "https://443464482778.ngrok-free.app",
+	"appGroup": "group.cc.chat.rocket.reactnative",
+	"appId": "6756915061"
 }

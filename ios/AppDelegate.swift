@@ -5,9 +5,10 @@ import Firebase
 import Bugsnag
 import MMKV
 import WatchConnectivity
+import UserNotifications
 
 @UIApplicationMain
-public class AppDelegate: ExpoAppDelegate {
+public class AppDelegate: ExpoAppDelegate, UNUserNotificationCenterDelegate {
   var window: UIWindow?
 
   var reactNativeDelegate: ReactNativeDelegate?
@@ -21,14 +22,29 @@ public class AppDelegate: ExpoAppDelegate {
     FirebaseApp.configure()
     Bugsnag.start()
     
-    // Initialize MMKV with app group
-    if let appGroup = Bundle.main.object(forInfoDictionaryKey: "AppGroup") as? String,
-       let groupDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup)?.path {
-      MMKV.initialize(rootDir: nil, groupDir: groupDir, logLevel: .debug)
+    // Initialize MMKV with app group (with logging)
+    if let appGroup = Bundle.main.object(forInfoDictionaryKey: "AppGroup") as? String {
+      if let groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) {
+        let groupDir = groupURL.path
+        print("🗂️ MMKV App Group resolved:", appGroup)
+        print("📁 MMKV Group Directory:", groupDir)
+        MMKV.initialize(rootDir: nil, groupDir: groupDir, logLevel: .debug)
+        print("✅ MMKV.initialize() called successfully")
+      } else {
+        print("⚠️ MMKV: Failed to resolve container URL for App Group:", appGroup)
+      }
+    } else {
+      print("⚠️ MMKV: 'AppGroup' key missing in Info.plist")
     }
     
     // Initialize notifications
     RNNotifications.startMonitorNotifications()
+    // Set UNUserNotificationCenter delegate for foreground presentation
+    let center = UNUserNotificationCenter.current()
+    center.delegate = self
+    center.getNotificationSettings { settings in
+      print("🔧 UNUserNotificationCenter settings:", settings)
+    }
     ReplyNotification.configure()
       
     let delegate = ReactNativeDelegate()
@@ -48,6 +64,7 @@ public class AppDelegate: ExpoAppDelegate {
 #endif
 
     let result = super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    print("🚀 Application finished launching. Registered for notifications?", UIApplication.shared.isRegisteredForRemoteNotifications)
 
     // Initialize boot splash
     if let rootViewController = window?.rootViewController {
@@ -63,16 +80,29 @@ public class AppDelegate: ExpoAppDelegate {
     return result
   }
 
-  // Remote Notification handling
-  public override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-    RNNotifications.didRegisterForRemoteNotifications(withDeviceToken: deviceToken)
-  }
+    // Remote Notification handling
+    public override func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        RNNotifications.didRegisterForRemoteNotifications(withDeviceToken: deviceToken)
+        
+        let tokenString = deviceToken.map {
+            String(format: "%02.2hhx", $0)
+        }.joined()
+        
+        print("📱 APNs Device Token:")
+        print(tokenString)
+        #if DEBUG
+        print("🌱 Using APNs sandbox environment (debug build)")
+        #else
+        print("🏭 Using APNs production environment (release build)")
+        #endif
+    }
   
   public override func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
     RNNotifications.didFailToRegisterForRemoteNotificationsWithError(error)
   }
   
   public override func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+    print("🔔 didReceiveRemoteNotification (background):", userInfo)
     RNNotifications.didReceiveBackgroundNotification(userInfo, withCompletionHandler: completionHandler)
   }
 
@@ -94,6 +124,24 @@ public class AppDelegate: ExpoAppDelegate {
     let result = RCTLinkingManager.application(application, continue: userActivity, restorationHandler: restorationHandler)
     return super.application(application, continue: userActivity, restorationHandler: restorationHandler) || result
   }
+
+  // MARK: - UNUserNotificationCenterDelegate
+  public func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                     willPresent notification: UNNotification,
+                                     withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+    let userInfo = notification.request.content.userInfo
+    print("🔔 willPresent notification:", userInfo)
+    // Present alert, sound, and badge while app is in foreground for debugging
+    completionHandler([.banner, .list, .sound, .badge])
+  }
+
+  public func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                     didReceive response: UNNotificationResponse,
+                                     withCompletionHandler completionHandler: @escaping () -> Void) {
+    let userInfo = response.notification.request.content.userInfo
+    print("📬 didReceive notification response:", userInfo)
+    completionHandler()
+  }
 }
 
 class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
@@ -109,3 +157,4 @@ class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
 #endif
   }
 }
+
