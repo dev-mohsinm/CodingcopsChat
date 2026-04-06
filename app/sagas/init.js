@@ -58,6 +58,7 @@ const restore = function* restore() {
 			yield localAuthenticate(server);
 			const serverRecord = yield getServerById(server);
 			if (!serverRecord) {
+				yield put(appStart({ root: RootEnum.ROOT_OUTSIDE }));
 				return;
 			}
 			yield put(selectServerRequest(server, serverRecord.version));

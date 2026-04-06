@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "218283179854",
+    "project_id": "rocketchat-d2a2c",
+    "storage_bucket": "rocketchat-d2a2c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:218283179854:android:7aa4a0ad3c0e2b2962281f",
+        "android_client_info": {
+          "package_name": "chat.rocket.reactnative"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5_IyxdlLQd4gvkNj3ZNSM0A_FI0qBTMU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

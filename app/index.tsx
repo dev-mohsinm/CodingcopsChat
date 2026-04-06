@@ -8,7 +8,8 @@ import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 import ResponsiveLayoutProvider from './lib/hooks/useResponsiveLayout/useResponsiveLayout';
 import AppContainer from './AppContainer';
-import { appInit, appInitLocalSettings, setMasterDetail as setMasterDetailAction } from './actions/app';
+import { appInit, appInitLocalSettings, appStart, setMasterDetail as setMasterDetailAction } from './actions/app';
+import { RootEnum } from './definitions';
 import { deepLinkingOpen } from './actions/deepLinking';
 import { ActionSheetProvider } from './containers/ActionSheet';
 import InAppNotification from './containers/InAppNotification';
@@ -127,11 +128,15 @@ export default class Root extends React.Component<{}, IState> {
 
 	init = async () => {
 		store.dispatch(appInitLocalSettings());
+		// Show loading screen immediately so the splash hide reveals a spinner, not a blank screen
+		store.dispatch(appStart({ root: RootEnum.ROOT_LOADING }));
 
 		// Open app from push notification
 		const notification = await initializePushNotifications();
 		if (notification) {
 			if ('configured' in notification) {
+				// Already configured (e.g. double-init), still need to boot the app
+				store.dispatch(appInit());
 				return;
 			}
 			onNotification(notification);
