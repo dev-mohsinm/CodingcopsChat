@@ -50,18 +50,19 @@ export const pushNotificationConfigure = (onNotification: (notification: INotifi
 		const videoConfCategory = new NotificationCategory('VIDEOCONF', [acceptAction, rejectAction]);
 
 		Notifications.setCategories([videoConfCategory, notificationCategory]);
-	} else if (Platform.OS === 'android' && Platform.constants.Version >= 33) {
-		// @ts-ignore
-		PermissionsAndroid.request('android.permission.POST_NOTIFICATIONS').then(permissionStatus => {
-			if (permissionStatus === 'granted') {
-				Notifications.registerRemoteNotifications();
-			} else {
-				// TODO: Ask user to enable notifications
-			}
-		});
-	} else {
-		Notifications.registerRemoteNotifications();
 	}
+
+	// Register for remote notifications on all Android versions
+	// For Android 13+, also request POST_NOTIFICATIONS permission
+	if (Platform.OS === 'android' && Platform.constants.Version >= 33) {
+		// @ts-ignore
+		PermissionsAndroid.request('android.permission.POST_NOTIFICATIONS').catch(error => {
+			console.warn('Failed to request POST_NOTIFICATIONS permission:', error);
+		});
+	}
+
+	// Always register for remote notifications regardless of permission status
+	Notifications.registerRemoteNotifications();
 
 	Notifications.events().registerRemoteNotificationsRegistered((event: Registered) => {
 		deviceToken = event.deviceToken;
