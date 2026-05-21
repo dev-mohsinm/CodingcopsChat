@@ -8379,10 +8379,10 @@ expo-document-picker@13.1.4:
   resolved "https://registry.yarnpkg.com/expo-document-picker/-/expo-document-picker-13.1.4.tgz#f78a91e31dfac8ff26ea065bdc015ce4938eb1cc"
   integrity sha512-VCjSRSuwwMGx8BAafq5X5XZhLu/Tviu9NMzrzQxEE/ZStd+/ZivLlcCSNmLRpCcdpRJGegahtI/C6kdKW0Jb4Q==
 
-expo-file-system@18.1.7:
-  version "18.1.7"
-  resolved "https://registry.yarnpkg.com/expo-file-system/-/expo-file-system-18.1.7.tgz#fe364c502d7339e1858062b5b46db10e822f7689"
-  integrity sha512-22JuZrJY26O+rjl5TFfwhb778XJTGIAzDlT+If7xBOwStYg2RP7pTEGeylPWeb2cL7Lpssu/tsRwPpxMzXffoA==
+expo-file-system@19.0.21:
+  version "19.0.21"
+  resolved "https://registry.yarnpkg.com/expo-file-system/-/expo-file-system-19.0.21.tgz#e96a68107fb629cf0dd1906fe7b46b566ff13e10"
+  integrity sha512-s3DlrDdiscBHtab/6W1osrjGL+C2bvoInPJD7sOwmxfJ5Woynv2oc+Fz1/xVXaE/V7HE/+xrHC/H45tu6lZzzg==
 
 expo-file-system@~18.1.9:
   version "18.1.9"
