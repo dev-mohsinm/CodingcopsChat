@@ -19,6 +19,7 @@ export default StyleSheet.create({
 		...sharedStyles.textAlignCenter
 	},
 	alignItemsCenter: {
-		alignItems: 'center'
+		alignItems: 'center',
+		marginTop: 160
 	}
 });

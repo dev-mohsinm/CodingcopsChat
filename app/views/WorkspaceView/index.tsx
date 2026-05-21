@@ -79,7 +79,7 @@ const WorkspaceView = () => {
 		<FormContainer testID='workspace-view'>
 			<FormContainerInner>
 				<View style={styles.alignItemsCenter}>
-					<ServerAvatar url={server} image={Assets_favicon_512?.url ?? Assets_favicon_512?.defaultUrl} />
+					{/* <ServerAvatar url={server} image={Assets_favicon_512?.url ?? Assets_favicon_512?.defaultUrl} /> */}
 					<Text style={[styles.serverName, { color: colors.fontTitlesLabels }]}>{Site_Name}</Text>
 					<Text style={[styles.serverUrl, { color: colors.fontSecondaryInfo }]}>{Site_Url}</Text>
 				</View>
